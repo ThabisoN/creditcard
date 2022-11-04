@@ -4,6 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+let types = {
+  Visa: /^4/,
+  MasterCard: /^5[1-5]/,
+  "American Express": /^3[47]/
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
