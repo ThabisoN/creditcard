@@ -3,8 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import 'react-credit-cards/es/styles-compiled.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { CreditCard} from './Components/CreditCard';
-import { ValidCreditCard } from './Components/ValidCreditCard'
+import { CreditCard } from './Components/CreditCard';
+import { ValidCreditCard } from './Components/ValidCreditCard';
 import { BrowserRouter, Router, Route, Switch, NavLink, Routes } from 'react-router-dom'
 
 function App() {
@@ -32,7 +32,6 @@ function App() {
           <Routes>
             <Route path='/creditcard' element={<CreditCard />} />
             <Route path='/validcreditcard' element={<ValidCreditCard />} />
-
           </Routes>
         </div>
       </BrowserRouter>

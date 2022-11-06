@@ -152,6 +152,10 @@ export class CreditCard extends Component {
         fields[field] = e.target.value;
         this.setState({ fields });
     }
+
+    handleBlur = (e) => {
+        this.handleValidation(e.target.name, e.target.value);
+    }
     resetClick() {
         this.setState({
             Id: 0,
@@ -182,11 +186,10 @@ export class CreditCard extends Component {
                 this.refreshList();
                 if (this.handleValidation()) {
                     alert("Form submitted");
-                } else {
-                    alert("Form has errors.")
                 }
             }, (error) => {
 
+                alert("Form has errors.");
             })
 
     }
@@ -203,7 +206,6 @@ export class CreditCard extends Component {
                                 expiry={this.state.Expiry}
                                 cvc={this.state.CVC}
                                 focused={this.state.focus}
-
                             />
                         </Col>
                         <Col>
@@ -218,11 +220,12 @@ export class CreditCard extends Component {
                                             value={this.state.Number}
                                             onChange={this.changeCardNumber}
                                             onFocus={this.changeFocus}
+                                            onBlur={this.handleBlur}
                                         />
                                         <span className="error">{this.state.errors["Number"]}</span>
                                     </Form.Group>
-                                    </Inputs>
-                                    <Inputs>
+                                </Inputs>
+                                <Inputs>
                                     <Form.Group className="mb-3" controlId="name">
                                         <input type='text'
                                             name='name'
@@ -296,3 +299,4 @@ export class CreditCard extends Component {
 }
 
 
+ 
