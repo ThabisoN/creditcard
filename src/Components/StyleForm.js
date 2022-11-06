@@ -101,8 +101,7 @@ const Buttons = styled.div`
   }
 `;
 
-const Error = styled.span`
+export const Error = styled.span`
   font-size: 13px;
   font-weight: bold;
-  color: red;
-`;
+  color: red;`;

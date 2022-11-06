@@ -1,93 +1,64 @@
-import valid from "card-validator";
+import moment from "moment";
 
-export default function validation(values) {
-  let errors = {};
-  let creditCard = valid.number(values.Number);
-
-  creditCard.Expiry = valid.Expiry(values.Expiry);
-  creditCard.cvc = valid.cvc(values.cvc);
-  creditCard.Name = valid.Name(values.Name);
-
-  errors.show = true;
-  errors.variant = "danger";
-  errors.message = "An unknown error occured. Please try again later"
-  errors.cname = false;
-  errors.cnumber = false;
-  errors.ctype = false;
-  errors.cexp = false;
-  errors.ccvc = false;
-
-  if (values.cvc === null || !values.cvc.trim()) {
-    errors.message = "Credit card cvc is not complete";
-  } else if (creditCard.cvc.isValid) {
-    errors.cvc = true;
-  } else {
-    errors.message = "Credit card cvc is invalid";
+export function stripeCardNumberValidation(cardNumber) {
+  const regexPattern = {
+    MASTERCARD: /^5[1-5][0-9]{1,}|^2[2-7][0-9]{1,}$/,
+    VISA: /^4[0-9]{2,}$/,
+    AMERICAN_EXPRESS: /^3[47][0-9]{5,}$/,
+    DISCOVER: /^6(?:011|5[0-9]{2})[0-9]{3,}$/,
+    DINERS_CLUB: /^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/,
+    JCB: /^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/
+  };
+  for (const card in regexPattern) {
+    if (cardNumber.replace(/[^\d]/g, "").match(regexPattern[card])) {
+      if (cardNumber) {
+        return cardNumber &&
+          /^[1-6]{1}[0-9]{14,15}$/i.test(
+            cardNumber.replace(/[^\d]/g, "").trim()
+          )
+          ? ""
+          : "Enter a valid Card";
+      }
+    }
   }
-
-  //Card CVV expiration
-  if (values.cvc === null || !values.cvc.trim()) {
-    errors.message = "Credit card CVC is not complete";
-  } else if (creditCard.cvc.isValid) {
-    errors.ccvc = true;
-  } else {
-    errors.message = "Credit card CVC is invalid";
-  }
-
-  //Card Expiration Verification
-  if (values.Expiry === null || !values.Expiry.trim()) {
-    errors.message = "Credit card expiration date is not complete";
-  } else if (creditCard.Expiry.isValid) {
-    errors.cexp = true;
-  } else {
-    errors.message = "Credit card expiration date is invalid";
-  }
-
-  //Card Type Verification
-  if (
-    values.cardType === null ||
-    !values.cardType.trim() ||
-    creditCard.card === null
-  ) {
-    errors.message = "Credit card type is not complete";
-  } else if (
-    creditCard.card.type &&
-    creditCard.card.type.toUpperCase() === values.cardType.toUpperCase()
-  ) {
-    errors.ctype = true;
-  } else {
-    errors.message = "Credit card type is invalid";
-  }
-
-  //Card Number Verification
-  if (values.Number === null || !values.Number.trim()) {
-    errors.message = "Credit card number is not complete";
-  } else if (creditCard.isValid) {
-    errors.cnumber = true;
-  } else {
-    errors.message = "Credit card number is invalid";
-  }
-
-  //Cardholder Name Verification
-  if (values.Name === null || !values.Name.trim()) {
-    errors.message = "Cardholder name is not complete";
-  } else if (creditCard.Name.isValid) {
-    errors.cname = true;
-  } else {
-    errors.message = "Cardholder name is invalid";
-  }
-
-  if (
-    errors.ctype &&
-    errors.cname &&
-    errors.cnumber &&
-    errors.cexp &&
-    errors.cpostal &&
-    errors.ccvv
-  ) {
-    errors.variant = "success";
-    errors.message = "Credit Card is valid";
-  }
-
-  return errors;
+  return "Enter a valid Card";
 }
+
+export const stripeCardExpirValidation = (value) => {
+  if (value) {
+    if (/^(0[1-9]|1[0-2])\/[0-9]{2}$/i.test(value.trim())) {
+      let today = new Date();
+      let CurrentDate = moment(
+        new Date(
+          today.getFullYear() +
+            "-" +
+            (today.getMonth() + 1) +
+            "-" +
+            new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
+        )
+      );
+      let visaValue = value.split("/");
+      let visaDate = new Date(`20${visaValue[1]}`, visaValue[0], 0);
+      return CurrentDate < moment(visaDate)
+        ? undefined
+        : "Please enter valid date";
+    } else {
+      return "Invalid date format";
+    }
+  }
+};
+
+export const textWithSpacesOnly = (value) => {
+  if (value) {
+    if (/^[a-zA-Z ]*$/i.test(value)) {
+      return undefined;
+    } else {
+      return "Only alphabets";
+    }
+  } else {
+    return undefined;
+  }
+};
+
+export const minLength = (min) => (value) =>
+  value && value.length < min ? `Must be 3 characters or more` : undefined;

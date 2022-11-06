@@ -13,6 +13,12 @@ import {
     CARDARR,
     CARDICON
 } from "./Constants";
+import {
+    stripeCardNumberValidation,
+    stripeCardExpirValidation,
+    textWithSpacesOnly,
+    minLength
+} from './Validation';
 import { BottomBox, Inputs, Errors } from './StyleForm'
 import MaskedInput from 'react-text-mask';
 
@@ -61,6 +67,21 @@ export class CreditCard extends Component {
     changeFocus = (e) => {
         this.setState({ focus: e.target.name });
     }
+
+    findDebitCardType(cardNumber) {
+        const regexPattern = {
+          MASTERCARD: /^5[1-5][0-9]{1,}|^2[2-7][0-9]{1,}$/,
+          VISA: /^4[0-9]{2,}$/,
+          AMERICAN_EXPRESS: /^3[47][0-9]{5,}$/,
+          DISCOVER: /^6(?:011|5[0-9]{2})[0-9]{3,}$/,
+          DINERS_CLUB: /^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/,
+          JCB: /^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/
+        };
+        for (const card in regexPattern) {
+          if (cardNumber.replace(/[^\d]/g, "").match(regexPattern[card])) return card;
+        }
+        return "";
+      }
 
     handleValidation() {
         let fields = this.state.fields;
@@ -251,7 +272,7 @@ export class CreditCard extends Component {
                                                         value={this.state.Expiry}
                                                         onChange={this.changeEXPDate}
                                                         onFocus={this.changeFocus}
-
+                                                        onBlur={this.handleBlur}
                                                     />
                                                     <span className="error">{this.state.errors["Expiry"]}</span>
                                                 </Form.Group>
@@ -266,7 +287,7 @@ export class CreditCard extends Component {
                                                         value={this.state.CVC}
                                                         onChange={this.changeCVC}
                                                         onFocus={this.changeFocus}
-
+                                                        onBlur={this.handleBlur}
                                                     />
                                                     <span className="error">{this.state.errors["CVC"]}</span>
                                                 </Form.Group>
@@ -299,4 +320,3 @@ export class CreditCard extends Component {
 }
 
 
- 
